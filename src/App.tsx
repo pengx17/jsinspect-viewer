@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import Highlight from 'react-highlight';
 
 import defaultDup from './dup.json';
+import { JsonFileReader } from './JsonFileReader';
 
-interface JSInspectInstance {
+interface IJSInspectInstance {
   lines: number[];
   code: string;
   path: string;
 }
 
-interface JSInspectItem {
+interface IJSInspectItem {
   id: string;
-  instances: JSInspectInstance[];
+  instances: IJSInspectInstance[];
 }
 
-const FilePath: React.FunctionComponent<{ instance: JSInspectInstance }> = ({
+const FilePath: React.FunctionComponent<{ instance: IJSInspectInstance }> = ({
   instance,
 }) => {
   const fragments = instance.path.split('/');
@@ -33,56 +34,34 @@ const FilePath: React.FunctionComponent<{ instance: JSInspectInstance }> = ({
   );
 };
 
-interface JsonFileReaderProps {
-  onFileContent?: (fileContent: any) => void;
-}
-
-const JsonFileReader: React.FunctionComponent<JsonFileReaderProps> = ({
-  onFileContent,
-}) => {
-  const inputRef = React.createRef<HTMLInputElement>();
-  const onInput = () => {
-    if (
-      inputRef.current === null ||
-      !inputRef.current.files ||
-      inputRef.current.files.length === 0
-    ) {
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (inputRef.current) {
-        inputRef.current.value = '';
-      }
-      const json = JSON.parse(reader.result as string);
-      console.log(json);
-      onFileContent && onFileContent(json);
-    };
-    reader.readAsText(inputRef.current.files[0]);
-  };
-
-  return (
-    <div>
-      <input ref={inputRef} type="file" onInput={onInput} accept=".json" />
-    </div>
-  );
-};
-
 const App: React.FunctionComponent = () => {
-  const [fileContent, setFileContent] = useState<JSInspectItem[]>(defaultDup);
+  const [fileContent, setFileContent] = useState<IJSInspectItem[]>(defaultDup);
   [...fileContent].sort((a, b) => a.instances.length - b.instances.length);
 
   const [collapseMapping, setCollapseMapping] = useState<{
     [i: string]: boolean;
   }>({});
 
-  const onCatClick = (instance: JSInspectInstance) => {
-    setCollapseMapping(prev => {
-      return {
-        ...prev,
-        [instance.path]: !prev[instance.path],
-      };
-    });
+  const FileListItem: React.FunctionComponent<{
+    instance: IJSInspectInstance;
+  }> = ({ instance }) => {
+    const onCatClick = () => {
+      setCollapseMapping(prev => {
+        return {
+          ...prev,
+          [instance.path]: !prev[instance.path],
+        };
+      });
+    };
+
+    return (
+      <li key={instance.path} onClick={onCatClick}>
+        <FilePath instance={instance} />
+        {collapseMapping[instance.path] && (
+          <Highlight>{instance.code}</Highlight>
+        )}
+      </li>
+    );
   };
   return (
     <div>
@@ -92,12 +71,7 @@ const App: React.FunctionComponent = () => {
           <h4>Instances: {item.instances.length}</h4>
           <ul>
             {item.instances.map(instance => (
-              <li key={instance.path} onClick={() => onCatClick(instance)}>
-                <FilePath instance={instance} />
-                {collapseMapping[instance.path] && (
-                  <Highlight>{instance.code}</Highlight>
-                )}
-              </li>
+              <FileListItem instance={instance} />
             ))}
           </ul>
         </div>
