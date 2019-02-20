@@ -58,7 +58,7 @@ const App: React.FunctionComponent = () => {
 
   return (
     <div>
-      {!parsing && <Inspector onParsed={onParsed} onParsing={setParsing} />}
+      <Inspector onParsed={onParsed} onParsing={setParsing} />
       {parsing && <h2>Parsing ... please wait</h2>}
       {directory && <h3>JSInspect results for {directory}</h3>}
       {fileContent.length > 0 &&

@@ -61,13 +61,14 @@ export const Inspector: React.FunctionComponent<{
     <form onSubmit={onSubmit}>
       <div>
         <label>
-          Select a folder:{' '}
+          Select a folder:
           <input
             ref={fileInputRef}
             name="path"
             onChange={onInputChange}
             type="file"
           />
+          <code>{opts.path}</code>
         </label>
       </div>
 
