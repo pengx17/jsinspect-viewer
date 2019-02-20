@@ -12,6 +12,7 @@
 /build
 /dist
 /jsinspect-viewer-darwin-x64
+*.dmg
 
 # misc
 .DS_Store

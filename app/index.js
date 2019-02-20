@@ -11,6 +11,7 @@ function createWindow() {
     width: 800,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
+      webSecurity: false,
     },
   });
 
