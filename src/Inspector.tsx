@@ -10,10 +10,11 @@ export const Inspector: React.FunctionComponent<{
     threshold: number;
     minInstances: number;
     path: string;
-    ignorePattern?: string;
+    ignore: string;
   }
 
   const [opts, setOpts] = useState<IOpts>({
+    ignore: '',
     minInstances: 3,
     path: '',
     threshold: 100,
@@ -97,11 +98,7 @@ export const Inspector: React.FunctionComponent<{
       <div>
         <label>
           Ignore pattern (default is 'node_modules'):{' '}
-          <input
-            name="ignorePattern"
-            value={opts.ignorePattern}
-            onChange={onInputChange}
-          />
+          <input name="ignore" value={opts.ignore} onChange={onInputChange} />
         </label>
       </div>
 
