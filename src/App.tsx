@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import Highlight from 'react-highlight';
-
-import defaultDup from './dup.json';
-import { JsonFileReader } from './JsonFileReader';
+import { FileContentMixer } from './FileContentMixer';
+import { Inspector } from './Inspector';
 
 interface IJSInspectInstance {
   lines: number[];
@@ -25,7 +23,9 @@ const FilePath: React.FunctionComponent<{ instance: IJSInspectInstance }> = ({
         index !== fragments.length - 1 ? (
           fragment + '/'
         ) : (
-          <span style={{ color: '#000', fontWeight: 'bold' }}>{fragment}</span>
+          <span key={index} style={{ color: '#000', fontWeight: 'bold' }}>
+            {fragment}
+          </span>
         )
       )}
       : {JSON.stringify(instance.lines)},{' '}
@@ -35,47 +35,52 @@ const FilePath: React.FunctionComponent<{ instance: IJSInspectInstance }> = ({
 };
 
 const App: React.FunctionComponent = () => {
-  const [fileContent, setFileContent] = useState<IJSInspectItem[]>(defaultDup);
+  const [directory, setDir] = useState('');
+  const [fileContent, setFileContent] = useState<IJSInspectItem[]>([]);
   [...fileContent].sort((a, b) => a.instances.length - b.instances.length);
-
-  const [collapseMapping, setCollapseMapping] = useState<{
-    [i: string]: boolean;
-  }>({});
 
   const FileListItem: React.FunctionComponent<{
     instance: IJSInspectInstance;
   }> = ({ instance }) => {
-    const onCatClick = () => {
-      setCollapseMapping(prev => {
-        return {
-          ...prev,
-          [instance.path]: !prev[instance.path],
-        };
-      });
-    };
-
     return (
-      <li key={instance.path} onClick={onCatClick}>
+      <li>
         <FilePath instance={instance} />
-        {collapseMapping[instance.path] && (
-          <Highlight>{instance.code}</Highlight>
-        )}
       </li>
     );
   };
+
+  const onParsed = (ndir: string, content: any) => {
+    setDir(ndir);
+    setFileContent(content);
+  };
+
+  const [parsing, setParsing] = useState(false);
+
   return (
     <div>
-      <JsonFileReader onFileContent={setFileContent} />
-      {fileContent.map(item => (
-        <div key={item.id}>
-          <h4>Instances: {item.instances.length}</h4>
-          <ul>
-            {item.instances.map(instance => (
-              <FileListItem instance={instance} />
-            ))}
-          </ul>
-        </div>
-      ))}
+      {!parsing && <Inspector onParsed={onParsed} onParsing={setParsing} />}
+      {parsing && <h2>Parsing ... please wait</h2>}
+      {directory && <h3>JSInspect results for {directory}</h3>}
+      {fileContent.length > 0 &&
+        fileContent.map(item => (
+          <div key={item.id}>
+            <h4>Instances: {item.instances.length}</h4>
+            <ul>
+              {item.instances.map((instance, i) => (
+                <FileListItem key={instance.path + i} instance={instance} />
+              ))}
+            </ul>
+
+            <h5>Mixed code: </h5>
+            <div style={{ border: '1px dashed', position: 'relative' }}>
+              <FileContentMixer codes={item.instances.map(ins => ins.code)} />
+            </div>
+          </div>
+        ))}
+
+      {directory && fileContent && fileContent.length === 0 && (
+        <h4>Not duplicates found!</h4>
+      )}
     </div>
   );
 };

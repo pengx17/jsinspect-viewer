@@ -1,20 +1,24 @@
-import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
+const { app, BrowserWindow, ipcMain } = require('electron');
+const { join } = require('path');
+const { fork } = require('child_process');
 
-let mainWindow: Electron.BrowserWindow | null;
+let mainWindow;
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
+    webPreferences: {
+      preload: join(__dirname, 'preload.js'),
+    },
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, '../index.html'));
+  mainWindow.loadFile(join(__dirname, '../dist/index.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -22,6 +26,16 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+  });
+
+  ipcMain.on('parse', (event, opts) => {
+    console.log(opts);
+
+    const parseProcess = fork(join(__dirname, './inspector.js'));
+    parseProcess.send(opts);
+    parseProcess.on('message', content => {
+      mainWindow.webContents.send('parsed', content);
+    });
   });
 }
 
