@@ -4,29 +4,37 @@ import { sortInspectItems } from './util';
 
 import styles from './Inspector.module.css';
 
+interface IOpts {
+  threshold: number;
+  minInstances: number;
+  path: string;
+  ignore: string;
+  identifiers: boolean;
+  literals: boolean;
+}
+
+const DEFAULT_OPTS: IOpts = {
+  identifiers: false,
+  ignore: '',
+  literals: false,
+  minInstances: 2,
+  path: '',
+  threshold: 30,
+};
+
+const JSINSPECT_OPTS = 'JSINSPECT_OPTS';
+
 export const Inspector: React.FunctionComponent<{
   onParsed?: (directory: string, content: IJSInspectItem[]) => void;
   onParsing?: (parsing: boolean) => void;
 }> = ({ onParsed, onParsing }) => {
   const fileInputRef = React.createRef<HTMLInputElement>();
 
-  interface IOpts {
-    threshold: number;
-    minInstances: number;
-    path: string;
-    ignore: string;
-    identifiers: boolean;
-    literals: boolean;
-  }
+  const dopts = localStorage.getItem(JSINSPECT_OPTS);
 
-  const [opts, setOpts] = useState<IOpts>({
-    identifiers: false,
-    ignore: '',
-    literals: false,
-    minInstances: 2,
-    path: '',
-    threshold: 30,
-  });
+  const [opts, setOpts] = useState<IOpts>(
+    dopts ? JSON.parse(dopts) : DEFAULT_OPTS
+  );
 
   const [parsing, setParsing] = useState<boolean>(false);
 
@@ -45,8 +53,11 @@ export const Inspector: React.FunctionComponent<{
     setOpts({ ...opts, [event.target.name]: newValue });
   };
 
-  const onSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = (e?: React.SyntheticEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
+    localStorage.setItem(JSINSPECT_OPTS, JSON.stringify(opts));
     if (opts.path) {
       setParsing(true);
       if (onParsing) {
@@ -73,7 +84,11 @@ export const Inspector: React.FunctionComponent<{
       (fileInputRef.current as any).directory = true;
       (fileInputRef.current as any).webkitdirectory = true;
     }
-  });
+
+    if (opts.path) {
+      onSubmit();
+    }
+  }, []);
 
   return (
     <fieldset>

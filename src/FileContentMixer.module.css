@@ -10,6 +10,7 @@
 .codeWrapper {
   left: 0;
   position: absolute;
-  top: '0';
-  width: '100%';
+  top: 0;
+  width: 100%;
+  text-shadow: 0 0 8px;
 }

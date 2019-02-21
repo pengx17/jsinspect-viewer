@@ -20,7 +20,8 @@ const FilePath: React.FunctionComponent<{ instance: IJSInspectInstance }> = ({
           </span>
         )
       )}
-      : {JSON.stringify(instance.lines)} ({getLines(instance)})
+      : {JSON.stringify(instance.lines)} (lines: {getLines(instance)}, chars:{' '}
+      {instance.code.length})
     </div>
   );
 };
@@ -46,7 +47,7 @@ export const InspectItem: React.FunctionComponent<{ item: IJSInspectItem }> = ({
   return (
     <fieldset className={styles.container}>
       <legend className={styles.sticky}>
-        Instances: {item.instances.length}, Duplicate length:{' '}
+        Instances: {item.instances.length}, Duplicate lines:{' '}
         {getMax(item.instances)}
       </legend>
       <ul>

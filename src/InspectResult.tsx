@@ -14,7 +14,7 @@ export const InspectResult: React.FunctionComponent<{
         Results for <strong>{directory}</strong>
       </legend>
       {items.length > 0 &&
-        items.map(item => <InspectItem key={item.id} item={item} />)}
+        items.map((item, i) => <InspectItem key={i} item={item} />)}
       {items.length === 0 && <h4>No duplicates found!</h4>}
     </fieldset>
   );
