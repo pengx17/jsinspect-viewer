@@ -84,10 +84,6 @@ export const Inspector: React.FunctionComponent<{
       (fileInputRef.current as any).directory = true;
       (fileInputRef.current as any).webkitdirectory = true;
     }
-
-    if (opts.path) {
-      onSubmit();
-    }
   }, []);
 
   return (

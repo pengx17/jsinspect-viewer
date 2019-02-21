@@ -1,4 +1,5 @@
-const { Inspector, reporters } = require('jsinspect');
+const Inspector = require('./lib/inspector');
+const JSONReporter = require('./lib/reporters/json');
 const stream = require('stream');
 const filepaths = require('filepaths');
 const { relative } = require('path');
@@ -36,14 +37,14 @@ function runJSInspector(opts = defaultOptions) {
   let content = '';
 
   // By default it uses process.cwd()
-  reporters.json.prototype._getRelativePath = function(filePath) {
+  JSONReporter.prototype._getRelativePath = function(filePath) {
     if (filePath.charAt(0) === '/') {
       filePath = relative(opts.path, filePath);
     }
     return filePath;
   };
 
-  new reporters.json(inspector, {
+  new JSONReporter(inspector, {
     truncate: 0,
     writableStream: new stream.Writable({
       objectMode: true,
