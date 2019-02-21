@@ -1,6 +1,7 @@
 const { Inspector, reporters } = require('jsinspect');
 const stream = require('stream');
 const filepaths = require('filepaths');
+const { relative } = require('path');
 
 const defaultOptions = {
   path: '.',
@@ -33,6 +34,15 @@ function runJSInspector(opts = defaultOptions) {
   });
 
   let content = '';
+
+  // By default it uses process.cwd()
+  reporters.json.prototype._getRelativePath = function(filePath) {
+    if (filePath.charAt(0) === '/') {
+      filePath = relative(opts.path, filePath);
+    }
+    return filePath;
+  };
+
   new reporters.json(inspector, {
     truncate: 0,
     writableStream: new stream.Writable({
@@ -43,6 +53,7 @@ function runJSInspector(opts = defaultOptions) {
       },
     }),
   });
+
   console.log('Parsing for ' + opts.path);
   inspector.run();
   console.log('Done!');
