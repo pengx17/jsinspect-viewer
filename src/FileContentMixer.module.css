@@ -1,0 +1,15 @@
+.wrapper {
+  font-size: 12px;
+  position: relative;
+}
+
+.wrapper :global(.hljs) {
+  background: transparent;
+}
+
+.codeWrapper {
+  left: 0;
+  position: absolute;
+  top: '0';
+  width: '100%';
+}

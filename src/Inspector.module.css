@@ -1,0 +1,31 @@
+.form {
+  display: flex;
+  flex-flow: column;
+  font-family: monospace;
+}
+
+.form input {
+  margin-left: 12px;
+}
+
+.form input[type='text'] {
+  width: 250px;
+}
+
+.form input[type='file'] {
+  width: 80px;
+}
+
+.form label {
+  margin: 4px 0;
+}
+
+.analyzeButton {
+  background: #eee;
+  font-size: 24px;
+  font-family: monospace;
+}
+
+.form code {
+  background: #eee;
+}

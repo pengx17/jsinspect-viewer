@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FileContentMixer } from './FileContentMixer';
 import { IJSInspectInstance, IJSInspectItem } from './type';
 import { getLines, getMax } from './util';
+
+import styles from './InspectItem.module.css';
 
 const FilePath: React.FunctionComponent<{ instance: IJSInspectInstance }> = ({
   instance,
 }) => {
   const fragments = instance.path.split('/');
   return (
-    <div style={{ color: '#666', fontFamily: 'monospace' }}>
+    <div className={styles.filePath}>
       {fragments.map((fragment, index) =>
         index !== fragments.length - 1 ? (
           fragment + '/'
         ) : (
-          <span key={index} style={{ color: '#000', fontWeight: 'bold' }}>
+          <span className={styles.filePathName} key={index}>
             {fragment}
           </span>
         )
@@ -36,22 +38,36 @@ export const InspectItem: React.FunctionComponent<{ item: IJSInspectItem }> = ({
     );
   };
 
+  const [showingCode, setShowingCode] = useState(false);
+  const onSetShowingCode = () => {
+    setShowingCode(!showingCode);
+  };
+
   return (
-    <div>
-      <h4>
+    <fieldset className={styles.container}>
+      <legend className={styles.sticky}>
         Instances: {item.instances.length}, Duplicate length:{' '}
         {getMax(item.instances)}
-      </h4>
+      </legend>
       <ul>
         {item.instances.map((instance, i) => (
           <FileListItem key={instance.path + i} instance={instance} />
         ))}
       </ul>
 
-      <h5>Mixed code: </h5>
-      <pre style={{ border: '1px dashed', position: 'relative' }}>
-        <FileContentMixer codes={item.instances.map(ins => ins.code)} />
-      </pre>
-    </div>
+      <fieldset>
+        <legend>
+          Mixed code. Show:{' '}
+          <input
+            type="checkbox"
+            checked={showingCode}
+            onChange={onSetShowingCode}
+          />
+        </legend>
+        {showingCode && (
+          <FileContentMixer codes={item.instances.map(ins => ins.code)} />
+        )}
+      </fieldset>
+    </fieldset>
   );
 };

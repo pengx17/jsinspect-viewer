@@ -1,6 +1,8 @@
 import React from 'react';
 import Highlight from 'react-highlight';
 
+import styles from './FileContentMixer.module.css';
+
 export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
   codes,
 }) => {
@@ -18,24 +20,16 @@ export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
   );
   return (
     <div
-      style={{
-        fontSize: '12px',
-        height: (minMax.max + 2) * 1.2 + 'em',
-        position: 'relative',
-      }}
+      className={styles.wrapper}
+      style={{ height: (minMax.max + 2) * 1.2 + 'em' }}
     >
       {codes.map((code, i) => (
         <div
-          style={{
-            left: '0',
-            opacity: 0.2,
-            position: 'absolute',
-            top: '0',
-            width: '100%',
-          }}
+          style={{ opacity: 1 / codes.length }}
+          className={styles.codeWrapper}
           key={i}
         >
-          <Highlight>{code}</Highlight>
+          <Highlight className="javascript">{code}</Highlight>
         </div>
       ))}
     </div>

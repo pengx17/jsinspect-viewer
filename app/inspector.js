@@ -28,13 +28,13 @@ function runJSInspector(opts = defaultOptions) {
   const inspector = new Inspector(paths, {
     threshold: +opts.threshold,
     minInstances: +opts.minInstances,
-    truncate: false,
     identifiers: opts.identifiers,
     literals: opts.literals,
   });
 
   let content = '';
   new reporters.json(inspector, {
+    truncate: 0,
     writableStream: new stream.Writable({
       objectMode: true,
       write: (data, _, done) => {

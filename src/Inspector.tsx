@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { IJSInspectItem } from './type';
 import { sortInspectItems } from './util';
 
+import styles from './Inspector.module.css';
+
 export const Inspector: React.FunctionComponent<{
   onParsed?: (directory: string, content: IJSInspectItem[]) => void;
   onParsing?: (parsing: boolean) => void;
@@ -21,9 +23,9 @@ export const Inspector: React.FunctionComponent<{
     identifiers: false,
     ignore: '',
     literals: false,
-    minInstances: 3,
+    minInstances: 2,
     path: '',
-    threshold: 100,
+    threshold: 30,
   });
 
   const [parsing, setParsing] = useState<boolean>(false);
@@ -74,52 +76,57 @@ export const Inspector: React.FunctionComponent<{
   });
 
   return (
-    <form onSubmit={onSubmit}>
-      <div>
+    <fieldset>
+      <legend>JSInspect options</legend>
+      <form onSubmit={onSubmit} className={styles.form}>
         <label>
-          Select a folder:
+          Choose a folder:
+          <input
+            type="text"
+            name="path"
+            value={opts.path}
+            onChange={onInputChange}
+          />
           <input
             ref={fileInputRef}
             name="path"
             onChange={onInputChange}
             type="file"
           />
-          <code>{opts.path}</code>
         </label>
-      </div>
 
-      <div>
         <label>
-          Min tokens:{' '}
+          Min tokens:
           <input
+            type="text"
             name="threshold"
             value={opts.threshold}
             onChange={onInputChange}
           />
         </label>
-      </div>
 
-      <div>
         <label>
-          Min instances:{' '}
+          Min instances:
           <input
+            type="text"
             name="minInstances"
             value={opts.minInstances}
             onChange={onInputChange}
           />
         </label>
-      </div>
 
-      <div>
         <label>
-          Ignore pattern (default is 'node_modules'):{' '}
-          <input name="ignore" value={opts.ignore} onChange={onInputChange} />
+          Ignore regex pattern (default is 'node_modules'):
+          <input
+            name="ignore"
+            type="text"
+            value={opts.ignore}
+            onChange={onInputChange}
+          />
         </label>
-      </div>
 
-      <div>
         <label>
-          Don't match identifiers
+          Don't match identifiers:
           <input
             name="identifiers"
             type="checkbox"
@@ -127,10 +134,8 @@ export const Inspector: React.FunctionComponent<{
             onChange={onInputChange}
           />
         </label>
-      </div>
-      <div>
         <label>
-          Don't match literals
+          Don't match literals:
           <input
             name="literals"
             type="checkbox"
@@ -138,11 +143,14 @@ export const Inspector: React.FunctionComponent<{
             onChange={onInputChange}
           />
         </label>
-      </div>
 
-      <button style={{ fontSize: '24px' }} disabled={!opts.path || parsing}>
-        Analyze!
-      </button>
-    </form>
+        <button
+          className={styles.analyzeButton}
+          disabled={!opts.path || parsing}
+        >
+          Analyze!
+        </button>
+      </form>
+    </fieldset>
   );
 };
