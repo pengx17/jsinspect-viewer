@@ -4,21 +4,17 @@
   "private": true,
   "main": "./app/index.js",
   "dependencies": {
-    "@types/node": "11.9.4",
-    "@types/react": "16.8.3",
-    "@types/react-dom": "16.8.2",
     "jsinspect": "^0.12.7",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
-    "react-highlight": "^0.12.0",
-    "rimraf": "^2.6.3"
+    "react-highlight": "^0.12.0"
   },
   "scripts": {
     "start": "concurrently \"yarn start:ui\" \"yarn electron .\"",
     "start:ui": "yarn parcel watch --no-hmr --public-url ./ src/index.html",
     "build:ui": "yarn parcel build --public-url ./ src/index.html",
-    "dist": "rimraf dist && yarn build:ui && yarn electron-packager . --overwrite --asar",
-    "mac": "yarn dist && yarn electron-installer-dmg --overwrite jsinspect-viewer-darwin-x64/jsinspect-viewer.app jsinspect-ui",
+    "dist": "rimraf dist && yarn build:ui && yarn electron-packager . --overwrite --out=bin",
+    "mac": "yarn dist && yarn electron-installer-dmg --overwrite ./bin/jsinspect-viewer-darwin-x64/jsinspect-viewer.app ./bin/jsinspect-ui",
     "lint": "tslint ./tslint.json"
   },
   "eslintConfig": {
@@ -47,6 +43,9 @@
     }
   },
   "devDependencies": {
+    "@types/node": "11.9.4",
+    "@types/react": "16.8.3",
+    "@types/react-dom": "16.8.2",
     "@babel/core": "^7.3.3",
     "autoprefixer": "^9.4.8",
     "babel-preset-react-app": "^7.0.1",
@@ -62,7 +61,8 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "tslint-react": "^3.6.0",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "rimraf": "^2.6.3"
   },
   "babel": {
     "presets": [

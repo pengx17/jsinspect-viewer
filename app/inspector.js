@@ -28,6 +28,9 @@ function runJSInspector(opts = defaultOptions) {
   const inspector = new Inspector(paths, {
     threshold: +opts.threshold,
     minInstances: +opts.minInstances,
+    truncate: false,
+    identifiers: opts.identifiers,
+    literals: opts.literals,
   });
 
   let content = '';
