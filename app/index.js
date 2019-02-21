@@ -8,7 +8,7 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 900,
-    width: 1600,
+    width: 1200,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       webSecurity: false,

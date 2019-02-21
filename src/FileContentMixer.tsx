@@ -21,11 +21,11 @@ export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
   return (
     <div
       className={styles.wrapper}
-      style={{ height: (minMax.max + 2) * 1.1 + 'em' }}
+      style={{ height: (minMax.max + 2) * 1.16 + 'em' }}
     >
       {codes.map((code, i) => (
         <div
-          style={{ opacity: 1 / codes.length }}
+          style={{ opacity: 1 / codes.length + 0.1 }}
           className={styles.codeWrapper}
           key={i}
         >

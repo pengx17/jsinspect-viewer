@@ -7,8 +7,7 @@
 ## Build & run
 
 ```
-yarn bundle
-open jsinspect-viewer-{arch}/jsinspect-viewer
+yarn dist
 ```
 
 ## Dev

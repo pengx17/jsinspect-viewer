@@ -11,11 +11,17 @@ export const InspectResult: React.FunctionComponent<{
   return (
     <fieldset className={styles.container}>
       <legend className={styles.sticky}>
-        Results for <strong>{directory}</strong>
+        Copy & Paste analysis for <strong>{directory}</strong>
       </legend>
       {items.length > 0 &&
         items.map((item, i) => <InspectItem key={i} item={item} />)}
-      {items.length === 0 && <h4>No duplicates found!</h4>}
+      {items.length === 0 && (
+        <div className={styles.noDuplicatesHint}>
+          <pre>
+            <code>No duplicates found! 😎😎😎</code>
+          </pre>
+        </div>
+      )}
     </fieldset>
   );
 };

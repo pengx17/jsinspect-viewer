@@ -7,4 +7,13 @@
 
 .container {
   position: relative;
+  display: flex;
+  flex-flow: column;
+}
+
+.noDuplicatesHint {
+  background: #eee;
+  font-size: 26px;
+  padding: 12px 24px;
+  font-weight: 800;
 }
