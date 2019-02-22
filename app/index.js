@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, remote, ipcMain } = require('electron');
 const { join } = require('path');
 const { fork } = require('child_process');
 
@@ -36,6 +36,7 @@ function createWindow() {
     parseProcess.send(opts);
     parseProcess.on('message', content => {
       mainWindow.webContents.send('parsed', content);
+      parseProcess.kill();
     });
   });
 }

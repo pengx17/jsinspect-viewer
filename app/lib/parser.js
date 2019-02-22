@@ -52,6 +52,7 @@ function _parse(src, filePath, sourceType) {
       'dynamicImport',
       'nullishCoalescingOperator',
       'optionalChaining',
+      'exportDefaultFrom',
     ],
   }).program;
 }

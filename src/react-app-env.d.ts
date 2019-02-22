@@ -63,4 +63,8 @@ declare module '*.module.sass' {
   export default classes;
 }
 
-declare const ipcRenderer: import('electron').IpcRenderer;
+// Preloaded via Electron
+// see app/preload.js
+declare module $backend {
+  export const ipcRenderer: import('electron').IpcRenderer;
+}

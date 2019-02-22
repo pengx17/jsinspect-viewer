@@ -1,8 +1,11 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, remote } = require('electron');
+const { fork } = require('child_process');
+
 function init() {
   // add global variables to your web page
-  window.isElectron = true;
-  window.ipcRenderer = ipcRenderer;
+  window.$backend = {
+    ipcRenderer,
+  };
 }
 
 init();

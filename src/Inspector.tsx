@@ -63,18 +63,20 @@ export const Inspector: React.FunctionComponent<{
       if (onParsing) {
         onParsing(true);
       }
-      ipcRenderer.send('parse', opts);
-      ipcRenderer.once('parsed', (_: any, message: string) => {
-        if (onParsed) {
-          const items = JSON.parse(message);
-          sortInspectItems(items);
-          onParsed(opts.path, items);
-        }
-        setParsing(false);
-        if (onParsing) {
-          onParsing(false);
-        }
-      });
+      if ($backend) {
+        $backend.ipcRenderer.send('parse', opts);
+        $backend.ipcRenderer.once('parsed', (_: any, message: string) => {
+          if (onParsed) {
+            const items = JSON.parse(message);
+            sortInspectItems(items);
+            onParsed(opts.path, items);
+          }
+          setParsing(false);
+          if (onParsing) {
+            onParsing(false);
+          }
+        });
+      }
     }
   };
 
