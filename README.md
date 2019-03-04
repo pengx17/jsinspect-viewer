@@ -1,8 +1,12 @@
 # JSInspect UI
 
+## Demo
+
+![demo](demo.png)
+
 ## Install
 
-```yarn```
+`yarn`
 
 ## Build & run
 
@@ -11,6 +15,7 @@ yarn dist
 ```
 
 ## Dev
+
 ```
 yarn start
 ```

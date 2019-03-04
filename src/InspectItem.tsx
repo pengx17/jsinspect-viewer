@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FileContentMixer } from './FileContentMixer';
 import { IJSInspectInstance, IJSInspectItem } from './type';
-import { getLines, getMax } from './util';
+import { getLines, getMaxFromInstances } from './util';
 
 import styles from './InspectItem.module.css';
 
@@ -48,7 +48,7 @@ export const InspectItem: React.FunctionComponent<{ item: IJSInspectItem }> = ({
     <fieldset className={styles.container}>
       <legend className={styles.sticky}>
         Instances: {item.instances.length}, Duplicate lines:{' '}
-        {getMax(item.instances)}
+        {getMaxFromInstances(item.instances)}
       </legend>
       <ul>
         {item.instances.map((instance, i) => (

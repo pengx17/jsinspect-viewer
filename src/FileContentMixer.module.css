@@ -5,6 +5,7 @@
 
 .wrapper :global(.hljs) {
   background: transparent;
+  overflow: hidden;
 }
 
 .codeWrapper {
@@ -12,5 +13,12 @@
   position: absolute;
   top: 0;
   width: 100%;
-  text-shadow: 0 0 8px;
+  line-height: 1.2;
+  font-size: 12px;
+}
+
+.heatmapCell {
+  background: red;
+  height: 1.2em;
+  width: 1ch;
 }

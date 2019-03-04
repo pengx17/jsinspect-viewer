@@ -3,25 +3,86 @@ import Highlight from 'react-highlight';
 
 import styles from './FileContentMixer.module.css';
 
+function getHeight(codes: string[]) {
+  return codes.reduce(
+    (max, code) => Math.max(max, code.split(/\r?\n/).length),
+    0
+  );
+}
+
+// Generate a magnitude 2d map. Width is 120, height is auto.
+function calcMagnitudeMap(codes: string[]): number[][] {
+  const width = 120;
+  const height = getHeight(codes);
+
+  const codeMaps = codes.map(code => {
+    const codeLines = Array.from(
+      code.split(/\r?\n/).map(line => line.padEnd(width, ' '))
+    );
+
+    while (codeLines.length < height) {
+      codeLines.push(''.padEnd(width, ' '));
+    }
+
+    return codeLines;
+  });
+
+  const rows: number[][] = [];
+
+  function getMagnitude(y: number, x: number) {
+    const chars = codeMaps.map(codeMap => codeMap[y][x]);
+    const uniq = Array.from(new Set(chars));
+    const mag = uniq.length;
+    // console.log(x, y, chars, uniq, mag);
+    return mag;
+  }
+
+  for (let y = 0; y < height; y++) {
+    const row: number[] = [];
+    for (let x = 0; x < width; x++) {
+      row.push(getMagnitude(y, x));
+    }
+
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+export const FileContentHeatmap: React.FunctionComponent<{
+  codes: string[];
+}> = ({ codes }) => {
+  const heatmap = calcMagnitudeMap(codes);
+  return (
+    <pre>
+      <code className="hljs">
+        {heatmap.map((row, y) => (
+          <span key={y}>
+            {row.map((mag, x) => (
+              <span
+                style={{ opacity: ((mag - 1) / codes.length) * 0.8 }}
+                key={x}
+                className={styles.heatmapCell}
+              >
+                {' '}
+              </span>
+            ))}
+            <br />
+          </span>
+        ))}
+      </code>
+    </pre>
+  );
+};
+
 export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
   codes,
 }) => {
-  const minMax = codes.reduce(
-    (mm, code) => {
-      const lines = code.split('\n').length;
-      const min = Math.min(mm.min, lines);
-      const max = Math.max(mm.max, lines);
-      return { min, max };
-    },
-    {
-      max: 0,
-      min: Number.MAX_VALUE,
-    }
-  );
+  const height = getHeight(codes);
   return (
     <div
       className={styles.wrapper}
-      style={{ height: (minMax.max + 2) * 1.16 + 'em' }}
+      style={{ height: (height + 2) * 14 + 'px' }}
     >
       {codes.map((code, i) => (
         <div
@@ -32,6 +93,9 @@ export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
           <Highlight className="javascript">{code}</Highlight>
         </div>
       ))}
+      <div className={styles.codeWrapper}>
+        <FileContentHeatmap codes={codes} />
+      </div>
     </div>
   );
 };
