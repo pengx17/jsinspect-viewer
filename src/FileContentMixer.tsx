@@ -78,6 +78,7 @@ export const FileContentHeatmap: React.FunctionComponent<{
 export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
   codes,
 }) => {
+  codes = codes.map(code => code.replace(/^\s*$(?:\r\n?|\n)/gm, ''));
   const height = getHeight(codes);
   return (
     <div
