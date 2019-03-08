@@ -17,15 +17,11 @@ function runJSInspector(opts = defaultOptions) {
   if (opts.ignore) {
     ignorePatterns.push(opts.ignore);
   }
-  try {
-    paths = filepaths.getSync(opts.path, {
-      ext: extensions,
-      ignore: ignorePatterns,
-    });
-  } catch (e) {
-    console.log(e.message);
-    process.exit(4);
-  }
+
+  paths = filepaths.getSync(opts.path, {
+    ext: extensions,
+    ignore: ignorePatterns,
+  });
 
   const inspector = new Inspector(paths, {
     threshold: +opts.threshold,
@@ -58,10 +54,18 @@ function runJSInspector(opts = defaultOptions) {
   console.log('Parsing for ' + opts.path);
   inspector.run();
   console.log('Done!');
-  return content;
+  return JSON.parse(content);
 }
 
 process.on('message', opts => {
-  const content = runJSInspector(opts);
-  process.send(content);
+  try {
+    const content = runJSInspector(opts);
+    process.send({ content: content });
+  } catch (error) {
+    process.send({
+      error: {
+        message: error.message,
+      },
+    });
+  }
 });

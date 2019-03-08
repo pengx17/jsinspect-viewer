@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { IJSInspectItem } from './type';
+import styles from './Inspector.module.css';
+import { InspectorOptsSelect } from './InspectorOptsSelect';
+import { IInspectOpts, IJSInspectItem } from './type';
 import { sortInspectItems } from './util';
 
-import styles from './Inspector.module.css';
-
-interface IOpts {
-  threshold: number;
-  minInstances: number;
-  path: string;
-  ignore: string;
-  identifiers: boolean;
-  literals: boolean;
-}
-
-const DEFAULT_OPTS: IOpts = {
+const DEFAULT_OPTS: IInspectOpts = {
   identifiers: false,
   ignore: '',
   literals: false,
@@ -22,7 +13,27 @@ const DEFAULT_OPTS: IOpts = {
   threshold: 30,
 };
 
-const JSINSPECT_OPTS = 'JSINSPECT_OPTS';
+const JSINSPECT_OPTS_LIST = 'JSINSPECT_OPTS_LIST';
+const MAX_OPTION_LIST = 15;
+
+const useStoredOptList: () => [
+  IInspectOpts[],
+  React.Dispatch<IInspectOpts[]>
+] = () => {
+  const storedOptList = localStorage.getItem(JSINSPECT_OPTS_LIST);
+
+  const [optsList, setOptList] = useState<IInspectOpts[]>(
+    storedOptList ? JSON.parse(storedOptList) : []
+  );
+
+  return [
+    optsList,
+    (newOpts: IInspectOpts[]) => {
+      setOptList(newOpts);
+      localStorage.setItem(JSINSPECT_OPTS_LIST, JSON.stringify(newOpts));
+    },
+  ];
+};
 
 export const Inspector: React.FunctionComponent<{
   onParsed?: (directory: string, content: IJSInspectItem[]) => void;
@@ -30,12 +41,9 @@ export const Inspector: React.FunctionComponent<{
 }> = ({ onParsed, onParsing }) => {
   const fileInputRef = React.createRef<HTMLInputElement>();
 
-  const dopts = localStorage.getItem(JSINSPECT_OPTS);
+  const [optsList, setOptList] = useStoredOptList();
 
-  const [opts, setOpts] = useState<IOpts>(
-    dopts ? JSON.parse(dopts) : DEFAULT_OPTS
-  );
-
+  const [opts, setOpts] = useState<IInspectOpts>(DEFAULT_OPTS);
   const [parsing, setParsing] = useState<boolean>(false);
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = event => {
@@ -57,7 +65,19 @@ export const Inspector: React.FunctionComponent<{
     if (e) {
       e.preventDefault();
     }
-    localStorage.setItem(JSINSPECT_OPTS, JSON.stringify(opts));
+
+    let newOptionList = [
+      ...optsList.filter(option => option.path !== opts.path),
+      opts,
+    ];
+
+    if (newOptionList.length > MAX_OPTION_LIST) {
+      newOptionList = newOptionList.slice(
+        newOptionList.length - MAX_OPTION_LIST
+      );
+    }
+
+    setOptList(newOptionList);
     if (opts.path) {
       setParsing(true);
       if (onParsing) {
@@ -65,12 +85,22 @@ export const Inspector: React.FunctionComponent<{
       }
       if ($backend) {
         $backend.ipcRenderer.send('parse', opts);
-        $backend.ipcRenderer.once('parsed', (_: any, message: string) => {
-          if (onParsed) {
-            const items = JSON.parse(message);
-            sortInspectItems(items);
-            onParsed(opts.path, items);
+        $backend.ipcRenderer.once(
+          'parsed',
+          (_: any, resp: IJSInspectItem[]) => {
+            if (onParsed) {
+              sortInspectItems(resp);
+              onParsed(opts.path, resp);
+            }
+            setParsing(false);
+            if (onParsing) {
+              onParsing(false);
+            }
           }
+        );
+
+        $backend.ipcRenderer.once('parseerror', (_: any, { message }) => {
+          alert(message);
           setParsing(false);
           if (onParsing) {
             onParsing(false);
@@ -90,7 +120,18 @@ export const Inspector: React.FunctionComponent<{
 
   return (
     <fieldset>
-      <legend>JSInspect options</legend>
+      <legend>
+        JSInspect options
+        {optsList && optsList.length > 0 && (
+          <div style={{ marginLeft: '12px' }}>
+            <InspectorOptsSelect
+              path={opts.path}
+              options={optsList}
+              onSelected={setOpts}
+            />
+          </div>
+        )}
+      </legend>
       <form onSubmit={onSubmit} className={styles.form}>
         <label>
           Choose a folder:

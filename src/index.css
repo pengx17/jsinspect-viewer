@@ -17,6 +17,8 @@ fieldset legend {
   font-size: 24px;
   font-family: monospace;
   padding: 0 6px;
+  display: flex;
+  align-items: center;
 }
 
 fieldset fieldset legend {

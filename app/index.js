@@ -29,13 +29,18 @@ function createWindow() {
     mainWindow = null;
   });
 
-  ipcMain.on('parse', (event, opts) => {
+  ipcMain.on('parse', (_event, opts) => {
     console.log(opts);
 
     const parseProcess = fork(join(__dirname, './inspector.js'));
+
     parseProcess.send(opts);
-    parseProcess.on('message', content => {
-      mainWindow.webContents.send('parsed', content);
+    parseProcess.on('message', data => {
+      if (data.error) {
+        mainWindow.webContents.send('parseerror', data.error);
+      } else {
+        mainWindow.webContents.send('parsed', data.content);
+      }
       parseProcess.kill();
     });
   });
