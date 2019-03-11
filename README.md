@@ -8,10 +8,10 @@
 
 `yarn`
 
-## Build & run
+## Build & run (mac)
 
 ```
-yarn dist
+yarn mac
 ```
 
 ## Dev
