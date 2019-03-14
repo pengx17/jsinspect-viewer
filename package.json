@@ -15,7 +15,7 @@
     "strip-json-comments": "^2.0.1"
   },
   "scripts": {
-    "start": "concurrently \"yarn start:ui\" \"yarn electron .\"",
+    "start": "concurrently --kill-others \"yarn start:ui\" \"yarn electron .\"",
     "start:ui": "yarn parcel watch --no-hmr --public-url ./ src/index.html",
     "build:ui": "yarn parcel build --public-url ./ src/index.html",
     "dist": "rimraf dist && yarn build:ui && yarn electron-packager . --overwrite --out=bin",

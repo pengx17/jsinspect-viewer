@@ -23,6 +23,11 @@ function runJSInspector(opts = defaultOptions) {
     ignore: ignorePatterns,
   });
 
+  if (opts.includePattern) {
+    const reg = new RegExp(opts.includePattern);
+    paths = paths.filter(path => reg.test(path));
+  }
+
   const inspector = new Inspector(paths, {
     threshold: +opts.threshold,
     minInstances: +opts.minInstances,

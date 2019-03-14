@@ -7,6 +7,7 @@ import { sortInspectItems } from './util';
 const DEFAULT_OPTS: IInspectOpts = {
   identifiers: false,
   ignore: '',
+  includePattern: '',
   literals: false,
   minInstances: 2,
   path: '',
@@ -170,11 +171,21 @@ export const Inspector: React.FunctionComponent<{
         </label>
 
         <label>
+          File path regex pattern (default is empty):
+          <input
+            name="includePattern"
+            type="text"
+            value={opts.includePattern || ''}
+            onChange={onInputChange}
+          />
+        </label>
+
+        <label>
           Ignore regex pattern (default is 'node_modules'):
           <input
             name="ignore"
             type="text"
-            value={opts.ignore}
+            value={opts.ignore || ''}
             onChange={onInputChange}
           />
         </label>

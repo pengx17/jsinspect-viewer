@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Highlight from 'react-highlight';
 
 import styles from './FileContentMixer.module.css';
@@ -52,7 +52,7 @@ function calcMagnitudeMap(codes: string[]): number[][] {
 export const FileContentHeatmap: React.FunctionComponent<{
   codes: string[];
 }> = ({ codes }) => {
-  const heatmap = calcMagnitudeMap(codes);
+  const heatmap = useMemo(() => calcMagnitudeMap(codes), [codes]);
   return (
     <pre>
       <code className="hljs">
@@ -78,16 +78,19 @@ export const FileContentHeatmap: React.FunctionComponent<{
 export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
   codes,
 }) => {
-  codes = codes.map(code => code.replace(/^\s*$(?:\r\n?|\n)/gm, ''));
-  const height = getHeight(codes);
+  const cleanedCodes = useMemo(
+    () => codes.map(code => code.replace(/^\s*$(?:\r\n?|\n)/gm, '')),
+    [codes]
+  );
+  const height = useMemo(() => getHeight(cleanedCodes), [cleanedCodes]);
   return (
     <div
       className={styles.wrapper}
       style={{ height: (height + 2) * 14 + 'px' }}
     >
-      {codes.map((code, i) => (
+      {cleanedCodes.map((code, i) => (
         <div
-          style={{ opacity: 1 / codes.length + 0.1 }}
+          style={{ opacity: 1 / cleanedCodes.length + 0.1 }}
           className={styles.codeWrapper}
           key={i}
         >
@@ -95,7 +98,7 @@ export const FileContentMixer: React.FunctionComponent<{ codes: string[] }> = ({
         </div>
       ))}
       <div className={styles.codeWrapper}>
-        <FileContentHeatmap codes={codes} />
+        <FileContentHeatmap codes={cleanedCodes} />
       </div>
     </div>
   );

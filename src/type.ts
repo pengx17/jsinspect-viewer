@@ -16,4 +16,5 @@ export interface IInspectOpts {
   ignore: string;
   identifiers: boolean;
   literals: boolean;
+  includePattern: string;
 }

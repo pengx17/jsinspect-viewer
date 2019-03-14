@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FileContentMixer } from './FileContentMixer';
+import styles from './InspectItem.module.css';
 import { IJSInspectInstance, IJSInspectItem } from './type';
 import { getLines, getMaxFromInstances } from './util';
-
-import styles from './InspectItem.module.css';
 
 const FilePath: React.FunctionComponent<{ instance: IJSInspectInstance }> = ({
   instance,
@@ -31,13 +30,15 @@ export const InspectItem: React.FunctionComponent<{ item: IJSInspectItem }> = ({
 }) => {
   const FileListItem: React.FunctionComponent<{
     instance: IJSInspectInstance;
-  }> = ({ instance }) => {
-    return (
-      <li>
-        <FilePath instance={instance} />
-      </li>
-    );
-  };
+  }> = useMemo(() => {
+    return ({ instance }) => {
+      return (
+        <li>
+          <FilePath instance={instance} />
+        </li>
+      );
+    };
+  }, []);
 
   const [showingCode, setShowingCode] = useState(false);
   const onSetShowingCode = () => {
