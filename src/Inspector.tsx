@@ -37,8 +37,8 @@ const useStoredOptList: () => [
 };
 
 export const Inspector: React.FunctionComponent<{
-  onParsed?: (directory: string, content: IJSInspectItem[]) => void;
-  onParsing?: (parsing: boolean) => void;
+  onParsed: (directory: string, content: IJSInspectItem[]) => void;
+  onParsing: (parsing: boolean) => void;
 }> = ({ onParsed, onParsing }) => {
   const fileInputRef = React.createRef<HTMLInputElement>();
 
@@ -62,10 +62,9 @@ export const Inspector: React.FunctionComponent<{
     setOpts({ ...opts, [event.target.name]: newValue });
   };
 
-  const onSubmit = (e?: React.SyntheticEvent<HTMLFormElement>) => {
-    if (e) {
-      e.preventDefault();
-    }
+  const onSubmit: React.ChangeEventHandler<HTMLFormElement> = e => {
+    e.preventDefault();
+    e.stopPropagation();
 
     let newOptionList = [
       ...optsList.filter(option => option.path !== opts.path),
@@ -89,23 +88,17 @@ export const Inspector: React.FunctionComponent<{
         $backend.ipcRenderer.once(
           'parsed',
           (_: any, resp: IJSInspectItem[]) => {
-            if (onParsed) {
-              sortInspectItems(resp);
-              onParsed(opts.path, resp);
-            }
+            sortInspectItems(resp);
+            onParsed(opts.path, resp);
             setParsing(false);
-            if (onParsing) {
-              onParsing(false);
-            }
+            onParsing(false);
           }
         );
 
         $backend.ipcRenderer.once('parseerror', (_: any, { message }) => {
           alert(message);
           setParsing(false);
-          if (onParsing) {
-            onParsing(false);
-          }
+          onParsing(false);
         });
       }
     }
@@ -134,8 +127,13 @@ export const Inspector: React.FunctionComponent<{
         )}
       </legend>
       <form onSubmit={onSubmit} className={styles.form}>
-        <label>
-          Choose a folder:
+        <div>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+          >
+            🗂Choose a folder
+          </button>
           <input
             type="text"
             name="path"
@@ -143,17 +141,18 @@ export const Inspector: React.FunctionComponent<{
             onChange={onInputChange}
           />
           <input
+            hidden={true}
             ref={fileInputRef}
             name="path"
             onChange={onInputChange}
             type="file"
           />
-        </label>
+        </div>
 
         <label>
           Min tokens:
           <input
-            type="text"
+            type="number"
             name="threshold"
             value={opts.threshold}
             onChange={onInputChange}
@@ -163,7 +162,7 @@ export const Inspector: React.FunctionComponent<{
         <label>
           Min instances:
           <input
-            type="text"
+            type="number"
             name="minInstances"
             value={opts.minInstances}
             onChange={onInputChange}
